@@ -87,8 +87,7 @@ def main():
                 "Running in test kubernetes mode, no action on node specs")
 
     if args.y:
-        def confirm(x, y=False):
-            return True
+        options.confirm = False
 
     options.context = args.context
     if args.context_for_cloud != "":

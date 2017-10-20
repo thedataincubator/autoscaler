@@ -31,6 +31,12 @@ class Autoscaler:
 
         self._add_slack_handler()
 
+    def confirm(self, prompt=None, default_response=False):
+        if not self._options.confirm:
+            print(prompt + ' [Y]')
+            return True
+        return confirm(prompt, default_response)
+
     def scale(self):
         """Update the nodes property based on scaling policy
         and create new nodes if necessary"""
@@ -47,7 +53,7 @@ class Autoscaler:
                           len(self._k8s.get_nodes()) - len(self._non_critical_nodes))
         scale_logger.info("Recommending total %i nodes for service", self._goal)
 
-        if confirm(("Updating unschedulable flags to ensure %i nodes are unschedulable" % max(len(self._k8s.get_nodes()) - self._goal, 0))):
+        if self.confirm(("Updating unschedulable flags to ensure %i nodes are unschedulable" % max(len(self._k8s.get_nodes()) - self._goal, 0))):
             self._update_unschedulable()
 
         if self._goal > len(self._k8s.get_nodes()):
@@ -91,7 +97,7 @@ class Autoscaler:
         count = 0
         for node in self._non_critical_nodes:
             if self._k8s.get_pods_number_on_node(node) == 0 and node.spec.unschedulable:
-                if confirm(("Shutting down empty node: %s" % node.metadata.name)):
+                if self.confirm(("Shutting down empty node: %s" % node.metadata.name)):
                     scale_logger.info(
                         "Shutting down empty node: %s", node.metadata.name)
                     if not test:
@@ -107,7 +113,7 @@ class Autoscaler:
     def _resize_for_new_nodes(self, test=False, wait_time=None):
         """create new nodes to match self._goal required
         only for scaling up"""
-        if confirm(("Resizing up to: %d nodes" % self._goal)):
+        if self.confirm(("Resizing up to: %d nodes" % self._goal)):
             scale_logger.info("Resizing up to: %d nodes", self._goal)
             if not test:
                 self._cluster.add_new_node(self._goal)

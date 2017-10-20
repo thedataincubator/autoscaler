@@ -45,6 +45,7 @@ class settings:
 
         self.context = ""
         self.context_cloud = ""
+        self.confirm = True
 
         self.slack_token = os.environ.get("SLACK_TOKEN", "")
 
