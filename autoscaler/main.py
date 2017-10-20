@@ -51,7 +51,8 @@ def main():
         "--context",
         required=True,
         help="A unique segment in the context name to specify which to \
-        use to instantiate Kubernetes"
+        use to instantiate Kubernetes, or 'incluster' to denote that the \
+        autoscaler is running within the cluster."
     )
     parser.add_argument(
         "--context-for-cloud",

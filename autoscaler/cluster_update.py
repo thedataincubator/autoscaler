@@ -162,9 +162,12 @@ class gce_cluster_control(abstract_cluster_control):
         managers = self.compute.instanceGroupManagers().list(
             zone=self.zone, project=self.project).execute()['items']
         matches = []
-        for manager in managers:
-            if segment in manager['name']:
-                matches.append(manager)
+        if segment == 'incluster':
+            matches = managers
+        else:
+            for manager in managers:
+                if segment in manager['name']:
+                    matches.append(manager)
         if len(matches) == 0:
             scale_logger.exception(
                 "Could not find context %s in Google Cloud project\n" % segment)

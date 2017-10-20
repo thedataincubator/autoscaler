@@ -56,6 +56,10 @@ class k8s_control:
     def _configure_new_context(self, new_context):
         """ Loads .kube config to instantiate kubernetes
         with specified context"""
+        if new_context == 'incluster':
+            config.load_incluster_config()
+            return 'incluster'
+
         contexts, _ = config.list_kube_config_contexts()
         try:
             contexts = [c['name'] for c in contexts]
